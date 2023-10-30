@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dispersion</title>
+    <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="dispersion.js"></script>
   </head>
   <body>
     <form name="userData" id="userData">
@@ -16,28 +18,16 @@
     </form>
     <section name="answerSection" id="answerSection">
       <section name="mx" id="mx">
-        <span style="font-weight: bold; font-size: 2rem">M(x) =</span>
-        <span
-          name="mxEq"
-          id="mxEq"
-          style="font-weight: bold; font-size: 2rem"
-        ></span>
+        <span>M(x) =</span>
+        <span name="mxEq" id="mxEq"></span>
       </section>
       <section name="dx" id="dx">
-        <span style="font-weight: bold; font-size: 2rem">D(x) =</span>
-        <span
-          name="dxEq"
-          id="dxEq"
-          style="font-weight: bold; font-size: 2rem"
-        ></span>
+        <span>D(x) =</span>
+        <span name="dxEq" id="dxEq"></span>
       </section>
       <section name="sigmax" id="sigmax">
-        <span style="font-weight: bold; font-size: 2rem">σ(x) =</span>
-        <span
-          name="sigmaxEq"
-          id="sigmaxEq"
-          style="font-weight: bold; font-size: 2rem"
-        ></span>
+        <span>σ(x) =</span>
+        <span name="sigmaxEq" id="sigmaxEq"></span>
       </section>
     </section>
     <section>
@@ -48,162 +38,3 @@
     </section>
   </body>
 </html>
-<script>
-  let polyCount = 0;
-  let stairsCount = 0;
-  const form = document.getElementById('userData');
-  const mxOut = document.getElementById('mxEq');
-  const dxOut = document.getElementById('dxEq');
-  const sigmaxOut = document.getElementById('sigmaxEq');
-  const ctxPolygon = document.getElementById('polygon');
-  const ctxStairs = document.getElementById('stairs');
-  let polychart, stairsChart;
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    let mx = 0;
-    let dx = 0;
-    let sigmax = 0;
-    let xi = form[0].value.split(',');
-    let pi = form[1].value.split(',');
-
-    if (xi.length == pi.length) {
-      for (let i = 0; i < xi.length; i++) {
-        mx += xi[i] * pi[i];
-      }
-
-      for (let j = 0; j < xi.length; j++) {
-        dx += Number(Math.pow(xi[j] - mx, 2)) * Number(pi[j]);
-      }
-
-      sigmax = Math.sqrt(dx);
-      mxOut.textContent = mx.toPrecision(5);
-      dxOut.textContent = dx.toPrecision(5);
-      sigmaxOut.textContent = sigmax.toPrecision(5);
-      increment();
-      drawPolygon();
-      drawStairs();
-    }
-  });
-
-  function drawPolygon() {
-    if (polyCount > 1) {
-      polyChart.destroy();
-    }
-    const chartLabels = form[0].value.split(',');
-    const chartData = form[1].value.split(',');
-    polyChart = new Chart(ctxPolygon, {
-      type: 'line',
-      data: {
-        labels: chartLabels,
-        datasets: [
-          {
-            label: 'Многоугольник',
-            data: chartData,
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
-      tooltip: {
-        enabled: true,
-      },
-      layout: {
-        autoPadding: true,
-      },
-    });
-  }
-
-  function drawStairs() {
-    if (stairsCount > 1) {
-      stairsChart.destroy();
-    }
-    const stairsData = [];
-    const chartLabels = form[0].value.split(',');
-    const chartData = form[1].value.split(',');
-    const sums = chartData.reduce((a, b) => {
-      stairsData.push(+a);
-      return Number(a) + Number(b);
-    });
-    stairsData.push(sums, 1);
-    stairsChart = new Chart(ctxStairs, {
-      type: 'line',
-      data: {
-        labels: [...chartLabels, +chartLabels[chartLabels.length - 1] * 15],
-        datasets: [
-          {
-            label: 'Ступеньки',
-            data: [...stairsData, 1],
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-        elements: {
-          line: {
-            stepped: true,
-          },
-        },
-      },
-    });
-  }
-
-  function increment() {
-    ++polyCount;
-    ++stairsCount;
-  }
-</script>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
-
-  * {
-    font-family: Montserrat;
-  }
-
-  body {
-    width: 100vw;
-    font-weight: bold;
-    font-size: 1.5rem;
-  }
-  #userData {
-    display: flex;
-    flex-direction: column;
-    margin: 0 auto;
-    row-gap: 0.3rem;
-    width: 50%;
-    align-items: center;
-    text-align: center;
-  }
-  #userData > * {
-    width: 100%;
-  }
-  input {
-    font-size: 1.5rem;
-  }
-  button {
-    padding: 0.5rem;
-    margin-top: 2rem;
-    width: 10rem;
-    font-size: 1rem;
-    font-weight: bold;
-  }
-  #answerSection {
-    margin-top: 2rem;
-  }
-
-  canvas {
-    width: 80vw;
-    margin: 0 auto;
-  }
-</style>
