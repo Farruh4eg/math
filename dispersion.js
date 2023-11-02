@@ -4,9 +4,10 @@ const dxOut = document.getElementById('dxEq');
 const sigmaxOut = document.getElementById('sigmaxEq');
 const ctxPolygon = document.getElementById('polygon');
 const ctxStairs = document.getElementById('stairs');
-let polyCount = 0;
-let stairsCount = 0;
-let polychart, stairsChart;
+const ctxPie = document.getElementById('pie');
+const ctxBar = document.getElementById('bar');
+let count = 0;
+let polychart, stairsChart, pieChart, barChart;
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -34,11 +35,13 @@ form.addEventListener('submit', (e) => {
     increment();
     drawPolygon(pi);
     drawStairs(pi);
+    drawPie(pi);
+    drawBar(pi);
   }
 });
 
 function drawPolygon(pi) {
-  if (polyCount > 1) {
+  if (count > 1) {
     polyChart.destroy();
   }
   const chartLabels = form[0].value.split(',');
@@ -71,7 +74,7 @@ function drawPolygon(pi) {
 }
 
 function drawStairs(pi) {
-  if (stairsCount > 1) {
+  if (count > 1) {
     stairsChart.destroy();
   }
   const stairsData = [];
@@ -108,7 +111,60 @@ function drawStairs(pi) {
   });
 }
 
+function drawPie(pi) {
+  if (count > 1) {
+    pieChart.destroy();
+  }
+  const chartLabels = form[0].value.split(',');
+  pieChart = new Chart(ctxPie, {
+    type: 'pie',
+    data: {
+      labels: chartLabels,
+      datasets: [
+        {
+          label: 'Кружок',
+          data: pi,
+          borderWidth: 1,
+        },
+      ],
+    },
+    tooltip: {
+      enabled: true,
+    },
+    layout: {
+      autoPadding: true,
+    },
+  });
+}
+
+function drawBar(pi) {
+  if (count > 1) {
+    barChart.destroy();
+  }
+  const chartLabels = form[0].value.split(',');
+  barChart = new Chart(ctxBar, {
+    type: 'bar',
+    data: {
+      labels: chartLabels,
+      datasets: [
+        {
+          label: 'Гистограмма',
+          data: pi,
+          barPercentage: 1.0,
+          categoryPercentage: 1.0,
+          borderWidth: 1,
+        },
+      ],
+    },
+    tooltip: {
+      enabled: true,
+    },
+    layout: {
+      autoPadding: true,
+    },
+  });
+}
+
 function increment() {
-  ++polyCount;
-  ++stairsCount;
+  ++count;
 }
